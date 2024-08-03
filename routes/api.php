@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AnimalController;
+use App\Http\Controllers\FarmController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::apiResource('farms', FarmController::class);
+Route::apiResource('farms.animals', AnimalController::class);
