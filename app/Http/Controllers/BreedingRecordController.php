@@ -8,6 +8,7 @@ use App\Models\Models\Animal;
 use App\Models\Models\BreedingRecord;
 use App\Services\ExceptionHandler;
 use App\Services\PredictBirthService;
+use Illuminate\Support\Facades\Auth;
 
 class BreedingRecordController extends Controller
 {

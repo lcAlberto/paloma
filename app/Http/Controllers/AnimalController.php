@@ -22,9 +22,15 @@ class AnimalController extends Controller
         }
     }
 
-    public function index(Farm $farm)
+    public function index()
     {
-        return $farm->animals;
+        try {
+            $farmId = Auth::user()->farm_id;
+            $animals = Animal::where('farm_id', $farmId)->get();
+            return response()->json($animals);
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 
     public function store(AnimalRequest $request, Farm $farm)
@@ -50,7 +56,9 @@ class AnimalController extends Controller
     public function show(Farm $farm, Animal $animal)
     {
         try {
-            return $animal;
+            if ($animal->farm_id != Auth::user()->farm_id) {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
         } catch (\Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
@@ -59,6 +67,10 @@ class AnimalController extends Controller
     public function update(AnimalRequest $request, Farm $farm, Animal $animal)
     {
         try {
+            if ($animal->farm_id != Auth::user()->farm_id) {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+
             $data = $request->validated();
             $authFarm = $farm->find(Auth::user()->farm_id);
 
@@ -80,6 +92,10 @@ class AnimalController extends Controller
     public function destroy(Farm $farm, Animal $animal)
     {
         try {
+            if ($animal->farm_id != Auth::user()->farm_id) {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+
             $animal->delete();
             return response()->json(null, 204);
         } catch (\Exception $exception) {
