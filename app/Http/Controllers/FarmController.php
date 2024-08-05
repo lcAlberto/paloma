@@ -2,53 +2,80 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FarmRequest;
 use App\Models\Models\Farm;
+use App\Services\ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class FarmController extends Controller
 {
-    public function index()
+
+    protected $exceptions;
+
+    public function __construct(ExceptionHandler $exceptions)
     {
-        return Farm::all();
+        try {
+            $this->exceptions = $exceptions;
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 
-    public function store(Request $request)
+    public function index()
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-        ]);
+        try {
+            return Farm::all();
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
+    }
 
-        $farm = Farm::create($request->all());
+    public function store(FarmRequest $request)
+    {
+        try {
 
-        // Relacionar o usuário logado com a Farm criada
-        $user = Auth::user();
-        $user->fazenda_id = $farm->id;
-        $user->save();
+            $farm = Farm::create($request->validated());
 
-        return response()->json($farm, 201);
+            $user = Auth::user();
+            $user->farm_id = $farm->id;
+            $user->save();
+
+            return response()->json($farm, 201);
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 
     public function show(Farm $farm)
     {
-        return $farm;
+        try {
+            return $farm;
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 
-    public function update(Request $request, Farm $farm)
+    public function update(FarmRequest $request, Farm $farm)
     {
-        $request->validate([
-            'nome' => 'string|max:255',
-        ]);
+        try {
+            $user = Auth::user();
 
-        $farm->update($request->all());
+            $farm->update($request->validated());
 
-        return response()->json($farm, 200);
+            return response()->json($farm, 200);
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 
     public function destroy(Farm $farm)
     {
-        $farm->delete();
-
-        return response()->json(null, 204);
+        try {
+            $farm->delete();
+            return response()->json(['message' => 'sucess'], 200);
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 }

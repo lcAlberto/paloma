@@ -2,52 +2,88 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AnimalRequest;
 use App\Models\Models\Animal;
 use App\Models\Models\Farm;
-use Illuminate\Http\Request;
+use App\Services\ExceptionHandler;
+use Illuminate\Support\Facades\Auth;
 
 class AnimalController extends Controller
 {
-    public function index(Farm $farm)
+
+    protected $exceptions;
+
+    public function __construct(ExceptionHandler $exceptions)
     {
-        return $farm->animais;
+        try {
+            $this->exceptions = $exceptions;
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 
-    public function store(Request $request, Farm $farm)
+    public function index(Farm $farm)
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'numero' => 'required|string|unique:animals,numero',
-            'data_nascimento' => 'required|date',
-        ]);
+        return $farm->animals;
+    }
 
-        $animal = $farm->animais()->create($request->all());
+    public function store(AnimalRequest $request, Farm $farm)
+    {
+        try {
+            $data = $request->validated();
+            $authFarm = $farm->find(Auth::user()->farm_id);
 
-        return response()->json($animal, 201);
+            if ($authFarm) {
+                $data['farm_id'] = $authFarm->id;
+
+                $animal = Animal::create($data);
+
+                return response()->json($animal, 201);
+            }
+
+            return response()->json(['message' => 'Farm not found'], 404);
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 
     public function show(Farm $farm, Animal $animal)
     {
-        return $animal;
+        try {
+            return $animal;
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 
-    public function update(Request $request, Farm $farm, Animal $animal)
+    public function update(AnimalRequest $request, Farm $farm, Animal $animal)
     {
-        $request->validate([
-            'nome' => 'string|max:255',
-            'numero' => 'string|unique:animals,numero,' . $animal->id,
-            'data_nascimento' => 'date',
-        ]);
+        try {
+            $data = $request->validated();
+            $authFarm = $farm->find(Auth::user()->farm_id);
 
-        $animal->update($request->all());
+            if ($authFarm) {
+                $data['farm_id'] = $authFarm->id;
 
-        return response()->json($animal, 200);
+                $animal->update($data);
+
+                return response()->json($animal, 200);
+            }
+
+            return response()->json(['message' => 'Farm not found'], 404);
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
+
     }
 
     public function destroy(Farm $farm, Animal $animal)
     {
-        $animal->delete();
-
-        return response()->json(null, 204);
+        try {
+            $animal->delete();
+            return response()->json(null, 204);
+        } catch (\Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
     }
 }

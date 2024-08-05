@@ -12,6 +12,9 @@ class Farm extends Model
 
     protected $fillable = [
         'name',
+        'code',
+        'born_date',
+        'farm_id'
     ];
 
     public function animals()
