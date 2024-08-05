@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AnimalRequest;
-use App\Models\Models\Animal;
-use App\Models\Models\Farm;
+use App\Models\Animal;
+use App\Models\Farm;
+use App\Models\User;
 use App\Services\ExceptionHandler;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,6 +26,8 @@ class AnimalController extends Controller
     public function index()
     {
         try {
+            $this->authorize('viewAny', Animal::class);
+
             $farmId = Auth::user()->farm_id;
             $animals = Animal::where('farm_id', $farmId)->get();
             return response()->json($animals);
@@ -36,6 +39,8 @@ class AnimalController extends Controller
     public function store(AnimalRequest $request, Farm $farm)
     {
         try {
+            $this->authorize('create', Animal::class);
+
             $data = $request->validated();
             $authFarm = $farm->find(Auth::user()->farm_id);
 
@@ -53,9 +58,11 @@ class AnimalController extends Controller
         }
     }
 
-    public function show(Farm $farm, Animal $animal)
+    public function show(User $user, Animal $animal)
     {
         try {
+            $this->authorize('view', $user, Animal::class);
+
             if ($animal->farm_id != Auth::user()->farm_id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
@@ -67,6 +74,8 @@ class AnimalController extends Controller
     public function update(AnimalRequest $request, Farm $farm, Animal $animal)
     {
         try {
+            $this->authorize('update', Animal::class);
+
             if ($animal->farm_id != Auth::user()->farm_id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
@@ -92,6 +101,8 @@ class AnimalController extends Controller
     public function destroy(Farm $farm, Animal $animal)
     {
         try {
+            $this->authorize('delete', Animal::class);
+
             if ($animal->farm_id != Auth::user()->farm_id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
