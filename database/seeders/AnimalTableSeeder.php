@@ -31,7 +31,7 @@ class AnimalTableSeeder extends Seeder
                 'born_date' => Carbon::now(),
                 'mother_id' => null,
                 'father_id' => null,
-                'farm_id' => '1'
+                'farm_id' => 1
             ],
             [
                 'id' => 2,
@@ -45,7 +45,7 @@ class AnimalTableSeeder extends Seeder
                 'born_date' => Carbon::now(),
                 'mother_id' => null,
                 'father_id' => null,
-                'farm_id' => '1'
+                'farm_id' => 1
             ],
             [
                 'id' => 3,
@@ -59,7 +59,50 @@ class AnimalTableSeeder extends Seeder
                 'born_date' => Carbon::now(),
                 'mother_id' => 1,
                 'father_id' => 2,
-                'farm_id' => '1'
+                'farm_id' => 1
+            ],
+
+            [
+                'id' => 4,
+                'name' => 'Sinfra',
+                'code' => '2335',
+                'breed' => 'Jersey',
+                'sex' => AnimalSexEnum::FEMEALE,
+                'classification' => AnimalClassEnum::COW_LACTATING,
+                'status' => AnimalStatusEnum::ALIVE,
+                'image' => null,
+                'born_date' => Carbon::now(),
+                'mother_id' => null,
+                'father_id' => null,
+                'farm_id' => 2
+            ],
+            [
+                'id' => 5,
+                'name' => 'Boi bandido',
+                'code' => '203',
+                'breed' => 'Jersey',
+                'sex' => AnimalSexEnum::MALE,
+                'classification' => AnimalClassEnum::BULL_REPRODUCTIVE,
+                'status' => AnimalStatusEnum::ALIVE,
+                'image' => null,
+                'born_date' => Carbon::now(),
+                'mother_id' => null,
+                'father_id' => null,
+                'farm_id' => 2
+            ],
+            [
+                'id' => 6,
+                'name' => 'Mocha',
+                'code' => '250',
+                'breed' => 'Jersey',
+                'sex' => AnimalSexEnum::FEMEALE,
+                'classification' => AnimalClassEnum::HE_CALVES,
+                'status' => AnimalStatusEnum::ALIVE,
+                'image' => null,
+                'born_date' => Carbon::now(),
+                'mother_id' => 4,
+                'father_id' => 5,
+                'farm_id' => 2
             ],
         ]);
     }

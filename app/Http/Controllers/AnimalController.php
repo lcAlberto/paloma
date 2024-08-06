@@ -26,7 +26,7 @@ class AnimalController extends Controller
     public function index()
     {
         try {
-            $this->authorize('viewAny', Animal::class);
+            $this->authorize('listAnimals', Animal::class);
 
             $farmId = Auth::user()->farm_id;
             $animals = Animal::where('farm_id', $farmId)->get();
@@ -39,7 +39,7 @@ class AnimalController extends Controller
     public function store(AnimalRequest $request, Farm $farm)
     {
         try {
-            $this->authorize('create', Animal::class);
+            $this->authorize('createAnimal', Animal::class);
 
             $data = $request->validated();
             $authFarm = $farm->find(Auth::user()->farm_id);
@@ -61,11 +61,13 @@ class AnimalController extends Controller
     public function show(User $user, Animal $animal)
     {
         try {
-            $this->authorize('view', $user, Animal::class);
+            $this->authorize('viewAnimal', $animal);
 
-            if ($animal->farm_id != Auth::user()->farm_id) {
-                return response()->json(['message' => 'Unauthorized'], 403);
+            if ($animal->farm_id === Auth::user()->farm_id) {
+                return response()->json($animal);
             }
+            return response()->json(['message' => 'Unauthorized'], 403);
+
         } catch (\Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
@@ -74,7 +76,7 @@ class AnimalController extends Controller
     public function update(AnimalRequest $request, Farm $farm, Animal $animal)
     {
         try {
-            $this->authorize('update', Animal::class);
+            $this->authorize('updateAnimal', $animal);
 
             if ($animal->farm_id != Auth::user()->farm_id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
@@ -101,7 +103,7 @@ class AnimalController extends Controller
     public function destroy(Farm $farm, Animal $animal)
     {
         try {
-            $this->authorize('delete', Animal::class);
+            $this->authorize('deleteAnimal', $animal);
 
             if ($animal->farm_id != Auth::user()->farm_id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
