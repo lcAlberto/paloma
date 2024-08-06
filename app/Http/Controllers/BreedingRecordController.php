@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Enums\AnimalHeatStatusEnum;
 use App\Http\Requests\BreedingRequest;
-use App\Models\Models\Animal;
-use App\Models\Models\BreedingRecord;
+use App\Models\Animal;
+use App\Models\BreedingRecord;
+use App\Models\User;
 use App\Services\ExceptionHandler;
 use App\Services\PredictBirthService;
+use Illuminate\Support\Facades\Auth;
 
 class BreedingRecordController extends Controller
 {
@@ -20,10 +22,16 @@ class BreedingRecordController extends Controller
         $this->exceptions = $exceptions;
     }
 
-    public function index()
+    public function index(BreedingRecord $breedingRecord)
     {
         try {
-            $matings = BreedingRecord::with(['female', 'male'])->get();
+            $this->authorize('viewAny', BreedingRecord::class);
+
+            $farmId = Auth::user()->farm_id;
+            $matings = BreedingRecord::whereHas('female', function ($query) use ($farmId) {
+                $query->where('farm_id', $farmId);
+            })->with(['female', 'male'])->get();
+
             return response()->json($matings);
         } catch (\Exception $exception) {
             return $this->exceptions->getExceptions($exception);
@@ -32,6 +40,8 @@ class BreedingRecordController extends Controller
 
     public function store(BreedingRequest $request)
     {
+        $this->authorize('create', BreedingRecord::class);
+
         $data = $request->validated();
         if (!array_key_exists('date_birth', $data) || ($data['status'] === AnimalHeatStatusEnum::PENDING)) {
             $data = $this->predictBirthService->birthPrediction($data);
@@ -42,18 +52,28 @@ class BreedingRecordController extends Controller
         return response()->json($breedingRecord, 201);
     }
 
-    public function show(BreedingRecord $breedingRecord)
+    public function show(BreedingRecord $model, $id)
     {
         try {
-            return response()->json($breedingRecord);
+            $breedingRecord = $model->find($id);
+            $this->authorize('view', $breedingRecord);
+
+            if (Auth::user()->farm_id === $breedingRecord->female->farm_id) {
+                return response()->json($breedingRecord);
+            }
+            return response()->json(['message' => 'Unauthorized'], 403);
+
         } catch (\Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
 
-    public function update(BreedingRequest $request, BreedingRecord $BreedingRecord)
+    public function update(BreedingRequest $request, BreedingRecord $model, $id)
     {
         try {
+            $breedingRecord = $model->find($id);
+            $this->authorize('update', $breedingRecord);
+
             $data = $request->validated();
 
             if (!array_key_exists('date_birth', $data) || ($data['status'] === AnimalHeatStatusEnum::PENDING)) {
@@ -64,17 +84,17 @@ class BreedingRecordController extends Controller
                 $data['status'] = AnimalHeatStatusEnum::SUCCESS;
             }
 
-            $BreedingRecord->update($data);
+            $breedingRecord->update($data);
 
             $female = Animal::find($data['female_id']);
-            $BreedingRecord->female()->associate($female);
+            $breedingRecord->female()->associate($female);
 
             if ($data['male_id']) {
                 $male = Animal::find($data['male_id']);
-                $BreedingRecord->male()->associate($male);
+                $breedingRecord->male()->associate($male);
             }
 
-            return response()->json(['success' => true, 'data' => $BreedingRecord->get()->first()], 200);
+            return response()->json(['success' => true, 'data' => $breedingRecord->get()->first()], 200);
         } catch (\Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
@@ -83,6 +103,8 @@ class BreedingRecordController extends Controller
     public function destroy(BreedingRecord $breedingRecord)
     {
         try {
+            $this->authorize('delete', $breedingRecord);
+
             $breedingRecord->delete();
             return response()->json(null, 204);
         } catch (\Exception $exception) {
