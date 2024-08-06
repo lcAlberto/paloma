@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -39,7 +40,7 @@ class AuthController extends Controller
         }
     }
 
-    public function login(RegisterRequest $request)
+    public function login(LoginRequest $request)
     {
         try {
             $credentials = $request->only('email', 'password');

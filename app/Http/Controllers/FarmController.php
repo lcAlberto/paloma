@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FarmRequest;
-use App\Models\Models\Farm;
+use App\Models\Farm;
 use App\Services\ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
