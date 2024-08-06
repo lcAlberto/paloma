@@ -68,9 +68,10 @@ class BreedingRecordController extends Controller
         }
     }
 
-    public function update(BreedingRequest $request, BreedingRecord $breedingRecord)
+    public function update(BreedingRequest $request, BreedingRecord $model, $id)
     {
         try {
+            $breedingRecord = $model->find($id);
             $this->authorize('update', $breedingRecord);
 
             $data = $request->validated();

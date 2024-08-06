@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AnimalClassEnum;
 use App\Enums\AnimalSexEnum;
+use App\Enums\AnimalStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AnimalRequest extends FormRequest
@@ -28,10 +30,13 @@ class AnimalRequest extends FormRequest
             'name' => ['string', 'max:255', 'min:3', $this->method() == 'PUT' ? 'sometimes' : 'unique:animals,name'],
             'code' => ['string', $this->method() == 'PUT' ? 'sometimes' : 'unique:animals,code'],
             'sex' => 'string|in:' . implode(',', AnimalSexEnum::getConstantsValues()),
+            'classification' => 'string|in:' . implode(',', AnimalClassEnum::getConstantsValues()),
+            'status' => 'string|in:' . implode(',', AnimalStatusEnum::getConstantsValues()),
             'breed' => 'nullable|string',
+            'image' => 'nullable|string',
             'born_date' => 'required|date',
             'father_id' => 'nullable|exists:animals,id',
-            'mother_id' => 'nullable|exists:animals,id'
+            'mother_id' => 'nullable|exists:animals,id',
         ];
     }
 
