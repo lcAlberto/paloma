@@ -1,0 +1,40 @@
+services:
+  php-fpm:
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+    volumes:
+      - ./:/var/www
+    networks:
+      - app-network
+
+  webserver:
+    build:
+      context: .
+      dockerfile: .docker/webserver/Dockerfile
+    volumes:
+      - ./:/var/www
+    ports:
+      - "8081:80"
+    depends_on:
+      - php-fpm
+    networks:
+      - app-network
+
+  mysql:
+    build:
+      context: .
+      dockerfile: .docker/mysql/Dockerfile
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
