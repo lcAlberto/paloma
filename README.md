@@ -1,64 +1,109 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+<p align="center"><a href="https://laravel.com" target="_blank">
+<img src="./resources/images/default-thumbnail1.png"></a></p>
+<h1 align="center">Paloma Gerenciamento de Rebanho Bovino API</h1>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+## É o olho do dono que engorda o gado! 
+
+<p>Gerencie seu rebanho de maneira eficiente com o controle total. Simpes e fácil de usar</p>
+<p>
+O sistema ainda está em desenvolvimento, então se sinta a vontade para criar uma issue, um fork ou pull request. Viva o mundo opensource!
 </p>
 
-## About Laravel
+## Frontend
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Disponível em desenvolvimento.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Antes de começarmos é importante que seu ambiente atenda os seguintes requisitos:
 
-## Learning Laravel
+### **DOCKER**
+##### Gerenciador de containers
+- [Instalação](https://docs.docker.com/engine/install/)
+- `version 27.1^`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### **DOCKER COMPOSE**:
+- [Instalação](https://docs.docker.com/compose/)
+- `version 2.29.1^`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Buildando o container
 
-## Laravel Sponsors
+```bash
+# docker-compose
+bash docker-compose up -d --build
+``` 
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Preparando as variáveis de ambiente
+```bash
+# copiar o .env
+cp .env.example .env
+```
 
-### Premium Partners
+## Instalando as dependências
+Entre na bash do container com
+```bash
+docker exec -it paloma-php-fpm-1 bash
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Instalar as dependencias do composer
+```bash
+# composer
+composer install
+```
 
-## Contributing
+## Gerando a key da aplicação
+Gere a chave da aplicação com o comando:
+```bash
+# artisan
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Configurando o banco de dados no arquivo `.env`
+Configure seu banco de dados no arquivo `.env`
+```bash
+# .env
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE='nome-do-seu-database'
+DB_USERNAME='usuário-do-seu-database'
+DB_PASSWORD='senha-do-seu-database'
+```
 
-## Code of Conduct
+## Migrando o banco de dados
+Para migrar as tabelas e já semear alguns dados para ilustrar o uso da aplicação, bem como algumas relações entre as tabelas use:
+```bash
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# executar as migrations
+php artisan migrate
 
-## Security Vulnerabilities
+# se quiser rodar as seeders
+php artisan migrate --seeders
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# para limpar o cache:
+php artisan config:cache
+
+# para listar as rotas utilizadas:
+php artisan route:list
+```
+
+## Rodando o servidor
+
+o servidor deve iniciar na url `http://localhost:8081`:
+
+## Importando Endpoints no Insomnia
+
+Para importar a coleção de endpoints no Insomnia, siga os passos abaixo:
+
+1. A colection de endpoints se encontra na raiz do projeto, em `endpoints/Insomnia_endpoints_doc.json`.
+2. No Insomnia, clique em `Import/Export` (ícone no canto superior direito).
+3. Selecione `Import Data` e, em seguida, `From File`.
+4. Escolha o arquivo `endpoints/paloma_insomnia_collection.json` na raiz do projeto.
+
+Após a importação, você verá todos os endpoints disponíveis para teste.
+
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The Laravel framework is open-sourced software licensed under the [GPL](LICENSE.md).
