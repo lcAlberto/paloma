@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdressController;
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\FarmController;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api')
 Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
 
 Route::group(['middleware' => 'auth:api'], function () {
+    Route::apiResource('address', AdressController::class);
     Route::apiResource('farms', FarmController::class);
     Route::apiResource('animals', AnimalController::class);
     Route::apiResource('breeding', BreedingRecordController::class);

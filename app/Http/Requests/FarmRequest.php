@@ -6,10 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class FarmRequest extends FormRequest
 {
+
+    public function authorize()
+    {
+        return auth()->check();
+    }
+
     public function rules()
     {
         return [
-            'name' => 'required|string',
+            'name' => 'required|string|unique:farms,name',
+            'address_id' => ['required', 'exists:addresses,id', $this->method() == 'PUT' ? 'sometimes' : 'string'],
         ];
     }
 
@@ -17,6 +24,7 @@ class FarmRequest extends FormRequest
     {
         return [
             'name' => 'nome',
+            'address_id' => 'endereço',
         ];
     }
 
