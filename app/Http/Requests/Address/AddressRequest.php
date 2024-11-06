@@ -27,8 +27,9 @@ class AddressRequest extends FormRequest
             'country_id' => 'required|exists:countries,id',
             'state_id' => 'required|exists:states,id',
             'city_id' => 'required|exists:cities,id',
-            'street' => 'required|string|required',
-            'zipcode' => 'required|string|min:8',
+            'street' => 'nullable|string|required',
+            'number' => 'nullable|string|required',
+            'zipcode' => 'nullable|string|min:8',
         ];
     }
 
@@ -37,7 +38,8 @@ class AddressRequest extends FormRequest
         return [
             'country_id' => 'país',
             'state_id' => 'estado',
-            'street' => 'rua e número',
+            'street' => 'rua',
+            'number' => 'número',
             'city_id' => 'cidade',
             'zipcode' => 'cep ou codigo postal',
         ];
