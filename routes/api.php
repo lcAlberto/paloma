@@ -18,4 +18,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('farms', FarmController::class);
     Route::apiResource('animals', AnimalController::class);
     Route::apiResource('breeding', BreedingRecordController::class);
+
+    Route::get('/animal/mothers', [AnimalController::class, 'getAvailableMothers']);
+    Route::get('/animal/fathers', [AnimalController::class, 'getAvailableFathers']);
 });
+
+Route::get('countries', [AdressController::class, 'fetchCountries']);
+Route::get('states/country/{country}', [AdressController::class, 'fetchStates']);
+Route::get('city/state/{state}', [AdressController::class, 'fetchCities']);
