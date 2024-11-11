@@ -25,13 +25,15 @@ class CreateBreedingRecordsTable extends Migration
             $table->enum('cover_method', AnimalHeatChildbirthTypeEnum::getConstantsValues())->nullable();
 
             $table->foreignId('female_id')
-            ->constrained('animals')
-            ->onDelete('cascade');
+                ->nullable()
+                ->constrained('animals')
+                ->onDelete('cascade');
 
             $table->foreignId('male_id')
-            ->nullable()
-            ->constrained('animals')
-            ->onDelete('set null');
+                ->nullable()
+                ->constrained('animals')
+                ->onDelete('set null');
+
             $table->timestamps();
         });
     }

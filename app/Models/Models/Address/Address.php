@@ -16,6 +16,7 @@ class Address extends Model
         'state_id',
         'city_id',
         'street',
+        'number',
         'zipcode',
     ];
 

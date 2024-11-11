@@ -15,5 +15,6 @@ abstract class AnimalClassEnum extends Enum
     const BULL_REPRODUCTIVE = 'bull-reproductive';//Touro
     const BULL_CASTRATED = 'bull-castrated';//Capão
     const BULL_RUFFIAN = 'bull-ruffian';//Rufião
+    const BULL_STEER = 'bull-steer';//Garrote
     const HE_CALVES = 'he-calves';//Bezerro*/
 }

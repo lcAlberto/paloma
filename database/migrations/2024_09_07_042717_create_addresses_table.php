@@ -20,6 +20,7 @@ class CreateAddressesTable extends Migration
             $table->unsignedBigInteger('state_id')->nullable();
             $table->unsignedBigInteger('city_id')->nullable();
             $table->string('street')->nullable();
+            $table->string('number')->nullable();
             $table->string('zipcode')->nullable();
 
             $table->foreign('farm_id')->references('id')->on('farms')->onDelete('set null');
