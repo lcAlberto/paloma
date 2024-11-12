@@ -22,6 +22,8 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('/animal/mothers', [AnimalController::class, 'getAvailableMothers']);
     Route::get('/animal/fathers', [AnimalController::class, 'getAvailableFathers']);
+    Route::get('/animal/getAvailableFemalesForReproduction', [AnimalController::class, 'getAvailableFemalesForReproduction']);
+    Route::get('/animal/getAvailableMalesForReproduction', [AnimalController::class, 'getAvailableMalesForReproduction']);
 
     /* NOTIFICATON TEST*/
 

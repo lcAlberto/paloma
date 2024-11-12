@@ -9,6 +9,7 @@ use App\Models\BreedingRecord;
 use App\Models\User;
 use App\Services\ExceptionHandler;
 use App\Services\PredictBirthService;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class BreedingRecordController extends Controller
@@ -32,8 +33,8 @@ class BreedingRecordController extends Controller
                 $query->where('farm_id', $farmId);
             })->with(['female', 'male'])->get();
 
-            return response()->json($matings);
-        } catch (\Exception $exception) {
+            return response()->json(['breedings' => $matings]);
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -49,7 +50,7 @@ class BreedingRecordController extends Controller
         $data = $this->predictBirthService->dateHandling($data);
 
         $breedingRecord = BreedingRecord::create($data);
-        return response()->json($breedingRecord, 201);
+        return response()->json(['breeding' => $breedingRecord], 201);
     }
 
     public function show(BreedingRecord $model, $id)
@@ -59,11 +60,11 @@ class BreedingRecordController extends Controller
             $this->authorize('view', $breedingRecord);
 
             if (Auth::user()->farm_id === $breedingRecord->female->farm_id) {
-                return response()->json($breedingRecord);
+                return response()->json(['breeding' => $breedingRecord]);
             }
             return response()->json(['message' => 'Unauthorized'], 403);
 
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -94,8 +95,8 @@ class BreedingRecordController extends Controller
                 $breedingRecord->male()->associate($male);
             }
 
-            return response()->json(['success' => true, 'data' => $breedingRecord->get()->first()], 200);
-        } catch (\Exception $exception) {
+            return response()->json(['success' => true, 'breeding' => $breedingRecord->get()->first()], 200);
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -107,7 +108,7 @@ class BreedingRecordController extends Controller
 
             $breedingRecord->delete();
             return response()->json(null, 204);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }

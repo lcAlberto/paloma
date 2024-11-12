@@ -17,7 +17,8 @@ class BreedingRecordPolicy
         return true;
     }
 
-    public function view(User $user, BreedingRecord $breedingRecord)    {
+    public function view(User $user, BreedingRecord $breedingRecord)
+    {
         $female = $breedingRecord->female()->get()->first();
         return $female->farm_id === Auth::user()->farm_id;
     }

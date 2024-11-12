@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Enums\AnimalClassEnum;
 use App\Enums\AnimalSexEnum;
+use App\Enums\AnimalStatusEnum;
 use App\Http\Requests\AnimalRequest;
 use App\Models\Animal;
 use App\Models\Farm;
 use App\Models\User;
 use App\Services\ExceptionHandler;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +23,7 @@ class AnimalController extends Controller
     {
         try {
             $this->exceptions = $exceptions;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -33,11 +35,11 @@ class AnimalController extends Controller
 
             $farmId = Auth::user()->farm_id;
             $animals = Animal::where('farm_id', $farmId)
-            ->with('mother')
+                ->with('mother')
                 ->with('father')
-            ->get();
+                ->get();
             return response()->json($animals);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -59,7 +61,7 @@ class AnimalController extends Controller
             }
 
             return response()->json(['message' => 'Farm not found'], 404);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -74,7 +76,7 @@ class AnimalController extends Controller
             }
             return response()->json(['message' => 'Unauthorized'], 403);
 
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -100,7 +102,7 @@ class AnimalController extends Controller
             }
 
             return response()->json(['message' => 'Farm not found'], 404);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
 
@@ -117,24 +119,25 @@ class AnimalController extends Controller
 
             $animal->delete();
             return response()->json(null, 204);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
 
 
-    public function getAvailableMothers(Request $request) {
+    public function getAvailableMothers(Request $request)
+    {
         try {
             $this->authorize('listAnimals', Animal::class);
 
             $farmId = Auth::user()->farm_id;
             $mothers = Animal::where('farm_id', $farmId)
-            ->where('sex', AnimalSexEnum::FEMEALE)
-            ->where('classification','!=', AnimalClassEnum::SHE_CALVES)
-            ->get();
+                ->where('sex', AnimalSexEnum::FEMEALE)
+                ->where('classification', '!=', AnimalClassEnum::SHE_CALVES)
+                ->get();
 
             return response()->json(['mothers' => $mothers]);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -147,11 +150,48 @@ class AnimalController extends Controller
             $farmId = Auth::user()->farm_id;
             $mothers = Animal::where('farm_id', $farmId)
                 ->where('sex', AnimalSexEnum::MALE)
-                ->whereNotIn('classification', [AnimalClassEnum::HE_CALVES , AnimalClassEnum::BULL_STEER])
+                ->whereNotIn('classification', [AnimalClassEnum::HE_CALVES, AnimalClassEnum::BULL_STEER])
                 ->get();
 
             return response()->json(['fathers' => $mothers]);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
+    }
+
+    public function getAvailableFemalesForReproduction(Request $request)
+    {
+        try {
+            $this->authorize('listAnimals', Animal::class);
+
+            $farmId = Auth::user()->farm_id;
+            $mothers = Animal::where('farm_id', $farmId)
+                ->where('sex', AnimalSexEnum::FEMEALE)
+                ->where('classification', '!=', AnimalClassEnum::SHE_CALVES)
+                ->where('status', '!=', AnimalStatusEnum::DEAD)
+                ->whereDoesntHave('matingsAsFemale')
+                ->get();
+
+            return response()->json(['females' => $mothers]);
+        } catch (Exception $exception) {
+            return $this->exceptions->getExceptions($exception);
+        }
+    }
+
+    public function getAvailableMalesForReproduction(Request $request)
+    {
+        try {
+            $this->authorize('listAnimals', Animal::class);
+
+            $farmId = Auth::user()->farm_id;
+            $mothers = Animal::where('farm_id', $farmId)
+                ->where('sex', AnimalSexEnum::MALE)
+                ->where('classification', AnimalClassEnum::BULL_REPRODUCTIVE)
+                ->where('status', '!=', AnimalStatusEnum::DEAD)
+                ->get();
+
+            return response()->json(['males' => $mothers]);
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
