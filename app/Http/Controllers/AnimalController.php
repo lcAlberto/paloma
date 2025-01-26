@@ -9,6 +9,7 @@ use App\Http\Requests\AnimalRequest;
 use App\Models\Animal;
 use App\Models\Farm;
 use App\Models\User;
+use App\Repositories\AnimalFiltersRepository;
 use App\Services\ExceptionHandler;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,9 +19,11 @@ class AnimalController extends Controller
 {
 
     protected $exceptions;
+    protected $filterRepository;
 
-    public function __construct(ExceptionHandler $exceptions)
+    public function __construct(ExceptionHandler $exceptions, AnimalFiltersRepository $animalFiltersRepository)
     {
+        $this->filterRepository = $animalFiltersRepository;
         try {
             $this->exceptions = $exceptions;
         } catch (Exception $exception) {
@@ -28,17 +31,41 @@ class AnimalController extends Controller
         }
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
             $this->authorize('listAnimals', Animal::class);
 
-            $farmId = Auth::user()->farm_id;
-            $animals = Animal::where('farm_id', $farmId)
-                ->with('mother')
-                ->with('father')
-                ->get();
-            return response()->json($animals);
+            $perPage = $request->input('per_page', 3);
+
+            $farmAnimalsQuery = Animal::where('farm_id', Auth::user()->farm_id)
+                ->with(['mother', 'father']);
+
+            $filteredQuery = $this->filterRepository->filter($farmAnimalsQuery, [
+                'name' => $request->name,
+                'code' => $request->code,
+                'sex' => $request->sex,
+                'classification' => $request->classification,
+                'age' => $request->age,
+                'born_date' => $request->born_date,
+                'born_date_from' => $request->born_date_from,
+                'born_date_to' => $request->born_date_to,
+                'status' => $request->status,
+                'mother_id' => $request->mother_id,
+                'father_id' => $request->father_id,
+            ]);
+
+            $paginatedAnimals = $filteredQuery->paginate($perPage, ['*'], 'page', $request->input('current_page', 1));
+
+            return response()->json([
+                'data' => $paginatedAnimals->items(),
+                'pagination' => [
+                    'total' => $paginatedAnimals->total(),
+                    'per_page' => $paginatedAnimals->perPage(),
+                    'current_page' => $paginatedAnimals->currentPage(),
+                    'last_page' => $paginatedAnimals->lastPage(),
+                ]
+            ]);
         } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
