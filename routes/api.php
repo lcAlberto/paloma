@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdressController;
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\FarmController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -24,6 +25,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/animal/fathers', [AnimalController::class, 'getAvailableFathers']);
     Route::get('/animal/getAvailableFemalesForReproduction', [AnimalController::class, 'getAvailableFemalesForReproduction']);
     Route::get('/animal/getAvailableMalesForReproduction', [AnimalController::class, 'getAvailableMalesForReproduction']);
+
+    Route::post('/password/check', [ProfileController::class, 'checkPassword']);
+    Route::put('/profile', [ProfileController::class, 'updatePersonalData']);
+    Route::put('/password', [ProfileController::class, 'updatePassword']);
 
     /* NOTIFICATON TEST*/
 
