@@ -16,8 +16,14 @@ class FarmTableSeeder extends Seeder
     public function run()
     {
         DB::table('farms')->insert([
-            ['name' => 'Fazenda 1'],
-            ['name' => 'Fazenda 2'],
+            [
+                'name' => 'Estância',
+                'created_at' => now(),
+            ],
+            [
+                'name' => 'Fazenda 2',
+                'created_at' => now(),
+            ],
         ]);
 
         $user1 = User::find('1');

@@ -7,33 +7,60 @@ use App\Http\Requests\BreedingRequest;
 use App\Models\Animal;
 use App\Models\BreedingRecord;
 use App\Models\User;
+use App\Repositories\BreedingFiltersRepository;
 use App\Services\ExceptionHandler;
 use App\Services\PredictBirthService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class BreedingRecordController extends Controller
 {
     protected $predictBirthService;
     protected $exceptions;
+    protected $filterRepository;
 
-    public function __construct(PredictBirthService $predictBirthService, ExceptionHandler $exceptions)
+    public function __construct(PredictBirthService $predictBirthService, ExceptionHandler $exceptions, BreedingFiltersRepository $breedingFiltersRepository)
     {
         $this->predictBirthService = $predictBirthService;
         $this->exceptions = $exceptions;
+        $this->filterRepository = $breedingFiltersRepository;
     }
 
-    public function index(BreedingRecord $breedingRecord)
+    public function index(BreedingRecord $breedingRecord, Request $request)
     {
         try {
             $this->authorize('viewAny', BreedingRecord::class);
 
-            $farmId = Auth::user()->farm_id;
-            $matings = BreedingRecord::whereHas('female', function ($query) use ($farmId) {
-                $query->where('farm_id', $farmId);
-            })->with(['female', 'male'])->get();
+            $perPage = $request->input('per_page', 3);
 
-            return response()->json(['breedings' => $matings]);
+            $farmId = Auth::user()->farm_id;
+            $farmBreedings = BreedingRecord::whereHas('female', function ($query) use ($farmId) {
+                $query->where('farm_id', $farmId);
+            })->with(['female', 'male']);
+
+            $breedingsFiltered = $this->filterRepository->filter($farmBreedings, [
+                'occurrence_date' => $request->occurrence_date,
+                'coverage_date' => $request->coverage_date,
+                'date_birth_prediction' => $request->date_birth_prediction,
+                'date_birth' => $request->date_birth,
+                'status' => $request->status,
+                'cover_method' => $request->cover_method,
+                'female_id' => $request->female_id,
+                'male_id' => $request->male_id,
+            ]);
+
+            $paginatedBreedings = $breedingsFiltered->paginate($perPage, ['*'], 'page', $request->input('current_page', 1));
+
+            return response()->json([
+                'data' => $paginatedBreedings->items(),
+                'pagination' => [
+                    'total' => $paginatedBreedings->total(),
+                    'per_page' => $paginatedBreedings->perPage(),
+                    'current_page' => $paginatedBreedings->currentPage(),
+                    'last_page' => $paginatedBreedings->lastPage(),
+                ]
+            ]);
         } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
