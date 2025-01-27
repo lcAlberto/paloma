@@ -8,6 +8,7 @@ use App\Models\Models\Address\Address;
 use App\Models\Models\Address\City;
 use App\Models\Models\Address\Country;
 use App\Models\Models\Address\State;
+use Exception;
 use Illuminate\Http\Request;
 use App\Services\ExceptionHandler;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,7 @@ class AdressController extends Controller
     {
         try {
             $this->exceptions = $exceptions;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -33,7 +34,7 @@ class AdressController extends Controller
             $farmId = Auth::user()->farm_id;
             $adress = Address::where('farm_id', $farmId)->get();
             return response()->json($adress);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -48,9 +49,9 @@ class AdressController extends Controller
 
             return response()->json([
                 'message' => 'Endereço criado!',
-                'address'=> $address,
+                'address' => $address,
             ], 201);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -60,9 +61,14 @@ class AdressController extends Controller
     {
         try {
             $this->authorize('viewAddress', $address);
+            $address->load('country');
+            $address->load('state');
+            $address->load('city');
             $address->load('farms');
-                return response()->json($address);
-        } catch (\Exception $exception) {
+            return response()->json([
+                'data' => $address,
+            ], 200);
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -79,7 +85,7 @@ class AdressController extends Controller
                 'message' => 'Endereço atualizado!',
                 'address' => $address,
             ], 201);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -91,20 +97,20 @@ class AdressController extends Controller
 
             $address->delete();
             return response()->json(['message' => 'sucess'], 200);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
 
-    public function fetchCountries () {
+    public function fetchCountries()
+    {
         try {
             $countries = Country::all();
             return response()->json([
                 'message' => 'sucess',
                 'countries' => $countries
             ], 200);
-        }
-        catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -117,7 +123,7 @@ class AdressController extends Controller
                 'message' => 'sucess',
                 'states' => $states
             ], 200);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -126,12 +132,12 @@ class AdressController extends Controller
     {
         try {
             $cities = $city->where('state_id', $state->id)
-            ->get();
+                ->get();
             return response()->json([
                 'message' => 'sucess',
                 'cities' => $cities,
             ], 200);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
