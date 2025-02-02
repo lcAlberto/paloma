@@ -6,9 +6,11 @@ use App\Http\Requests\PasswordUpdateRequest;
 use App\Http\Requests\ProfileRequest;
 use App\Models\User;
 use App\Services\ExceptionHandler;
+use App\Services\UserImageService;
 use Dotenv\Exception\ValidationException;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -38,18 +40,25 @@ class ProfileController extends Controller
         }
     }
 
-    public function updatePersonalData(ProfileRequest $request, User $user)
+    public function updatePersonalData(ProfileRequest $request)
     {
         try {
+            $user = auth()->user();
             $data = $request->validated();
+
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $data['image'] = app(UserImageService::class)->saveImageToUser($image, $user);
+            }
+
             $user->update($data);
+            $user['image'] = Storage::disk('s3')->url('personalProfiles/' . $user['image']);
             return response()->json([
                 'user' => $user,
             ], 201);
         } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
-
     }
 
     public function checkPassword(PasswordUpdateRequest $request, User $user)

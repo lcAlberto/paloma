@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Services\ExceptionHandler;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 
@@ -35,7 +37,7 @@ class AuthController extends Controller
             $token = JWTAuth::fromUser($user);
 
             return response()->json(compact('user', 'token'), 201);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -48,9 +50,11 @@ class AuthController extends Controller
             if (!$token = Auth::attempt($credentials)) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
+            $user = Auth::user();
+            $user['image'] = Storage::disk('s3')->url('personalProfiles/' . $user['image']);
 
-            return response()->json(['token' => $token, 'user' => Auth::user()]);
-        } catch (\Exception $exception) {
+            return response()->json(['token' => $token, 'user' => $user]);
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -60,7 +64,7 @@ class AuthController extends Controller
         try {
             Auth::logout();
             return response()->json(['message' => 'Successfully logged out']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -68,8 +72,11 @@ class AuthController extends Controller
     public function me()
     {
         try {
-            return response()->json(Auth::user());
-        } catch (\Exception $exception) {
+            $user = Auth::user();
+            $user['image'] = Storage::disk('s3')->url('personalProfiles/' . $user->image);
+            $user->image_url = Storage::disk('s3')->url('personalProfiles/' . $user->image);
+            return response()->json($user);
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }

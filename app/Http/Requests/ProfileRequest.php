@@ -8,7 +8,7 @@ class ProfileRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     public function rules(): array
@@ -16,6 +16,16 @@ class ProfileRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
+            'image' => 'nullable|image|mimes:webp,jpeg,png,jpg,gif,svg|max:2048',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nome',
+            'email' => 'email',
+            'image' => 'imagem',
         ];
     }
 }

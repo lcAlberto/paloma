@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/animal/getAvailableMalesForReproduction', [AnimalController::class, 'getAvailableMalesForReproduction']);
 
     Route::post('/password/check', [ProfileController::class, 'checkPassword']);
-    Route::put('/profile', [ProfileController::class, 'updatePersonalData']);
+    Route::post('/profile', [ProfileController::class, 'updatePersonalData']);
     Route::put('/password', [ProfileController::class, 'updatePassword']);
 
     /* NOTIFICATON TEST*/
