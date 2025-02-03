@@ -23,7 +23,7 @@ class FarmTableSeeder extends Seeder
             'name' => 'Fazenda 2',
             'created_at' => now(),
         ]);
-        
+
         $user1 = User::find('1');
         $user1->farm_id = 1;
         $user1->save();

@@ -15,11 +15,6 @@ class BrazilianCitiesTableSeeder extends Seeder
      */
     public function run()
     {
-//        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-//        DB::statement('TRUNCATE TABLE cities CASCADE;');
-
-//        DB::table('cities')->truncate();
-
 
         DB::table('cities')->insert([
             [
