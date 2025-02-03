@@ -15,14 +15,15 @@ class BrazilianCitiesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+//        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+//        DB::statement('TRUNCATE TABLE cities CASCADE;');
 
-        DB::table('cities')->truncate();
-        
+//        DB::table('cities')->truncate();
+
 
         DB::table('cities')->insert([
             [
-                'id' => mt_rand(1, 200),
+                'id' => 1,
                 'name' => 'Guarapuava',
                 'state_id' => 26,
                 'state_code' => 'PR',
@@ -36,7 +37,7 @@ class BrazilianCitiesTableSeeder extends Seeder
                 'wikiDataId' => 'Q326354',
             ],
             [
-                'id' => mt_rand(1, 200),
+                'id' => mt_rand(2, 200),
                 'name' => 'Araguainha',
                 'state_id' => 15,
                 'state_code' => 'MT',
@@ -50,7 +51,7 @@ class BrazilianCitiesTableSeeder extends Seeder
                 'wikiDataId' => 'Q1792161',
             ],
             [
-                'id' => mt_rand(1, 200),
+                'id' => mt_rand(2, 200),
                 'name' => 'Bilac',
                 'state_id' => 25,
                 'state_code' => 'SP',
@@ -64,7 +65,7 @@ class BrazilianCitiesTableSeeder extends Seeder
                 'wikiDataId' => 'Q1754582',
             ],
             [
-                'id' => mt_rand(1, 200),
+                'id' => mt_rand(2, 200),
                 'name' => 'Biquinhas',
                 'state_id' => 2,
                 'state_code' => 'MG',
@@ -78,7 +79,7 @@ class BrazilianCitiesTableSeeder extends Seeder
                 'wikiDataId' => 'Q1754582',
             ],
             [
-                'id' => mt_rand(1, 200),
+                'id' => mt_rand(2, 200),
                 'name' => 'Birigui',
                 'state_id' => 25,
                 'state_code' => 'SP',

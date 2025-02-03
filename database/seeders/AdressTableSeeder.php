@@ -19,7 +19,7 @@ class AdressTableSeeder extends Seeder
             'farm_id' => 1,
             'country_id' => 1,
             'state_id' => 26,
-            'city_id' => 85,
+            'city_id' => 1,
             'street' => 'Rua dezessete de Julho, 2012',
             'zipcode' => '85012040',
         ]);

@@ -74,7 +74,7 @@ class AuthController extends Controller
         try {
             $user = Auth::user();
             $user['image'] = Storage::disk('s3')->url('personalProfiles/' . $user->image);
-            $user->image_url = Storage::disk('s3')->url('personalProfiles/' . $user->image);
+            $user['image'] = str_replace("paloma/", "", $user->image);
             return response()->json($user);
         } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Models\Address\Country;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +15,7 @@ class CountryTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('countries')->insert([
+        Country::create(
             [
                 'id' => 1,
                 'name' => 'Brazil',
@@ -88,6 +89,6 @@ class CountryTableSeeder extends Seeder
                 'wikiDataId' => 'Q739',
 
             ]
-        ]);
+        );
     }
 }
