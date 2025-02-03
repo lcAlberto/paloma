@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Models\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BreedingRecord extends Model
 {
@@ -24,12 +25,12 @@ class BreedingRecord extends Model
         'male_id',
     ];
 
-    public function female()
+    public function female(): BelongsTo
     {
         return $this->belongsTo(Animal::class, 'female_id');
     }
 
-    public function male()
+    public function male(): BelongsTo
     {
         return $this->belongsTo(Animal::class, 'male_id');
     }

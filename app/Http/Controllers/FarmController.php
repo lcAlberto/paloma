@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FarmRequest;
-use App\Models\Models\Farm;
+use App\Models\Farm;
+use App\Models\Models\Address\Address;
 use App\Services\ExceptionHandler;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +19,7 @@ class FarmController extends Controller
     {
         try {
             $this->exceptions = $exceptions;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -26,7 +28,7 @@ class FarmController extends Controller
     {
         try {
             return Farm::all();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -41,8 +43,21 @@ class FarmController extends Controller
             $user->farm_id = $farm->id;
             $user->save();
 
-            return response()->json($farm, 201);
-        } catch (\Exception $exception) {
+            if (isset($request['address_id'])) {
+                $address = Address::find($request['address_id']);
+                if ($address) {
+                    $address->farm_id = $farm->id;
+                    $address->save();
+                }
+            }
+
+
+            $farm->load('address');
+
+            return response()->json([
+                'farm' => $farm,
+            ], 201);
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -50,8 +65,10 @@ class FarmController extends Controller
     public function show(Farm $farm)
     {
         try {
+            $farm->load('address');
+
             return $farm;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -62,9 +79,18 @@ class FarmController extends Controller
             $user = Auth::user();
 
             $farm->update($request->validated());
+            if ($request->address_id) {
+                $address = Address::find($request->address_id);
+                $address->farm_id = $farm->id;
+                $address->save();
+            }
 
-            return response()->json($farm, 200);
-        } catch (\Exception $exception) {
+            $farm->load('address');
+
+            return response()->json([
+                'data' => $farm,
+            ], 200);
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }
@@ -74,7 +100,7 @@ class FarmController extends Controller
         try {
             $farm->delete();
             return response()->json(['message' => 'sucess'], 200);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return $this->exceptions->getExceptions($exception);
         }
     }

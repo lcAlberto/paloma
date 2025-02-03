@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models\Models;
+namespace App\Models;
 
+use App\Models\Models\Address\Address;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,9 +13,7 @@ class Farm extends Model
 
     protected $fillable = [
         'name',
-        'code',
-        'born_date',
-        'farm_id'
+        'address_id',
     ];
 
     public function animals()
@@ -25,5 +24,10 @@ class Farm extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function address()
+    {
+        return $this->hasOne(Address::class);
     }
 }

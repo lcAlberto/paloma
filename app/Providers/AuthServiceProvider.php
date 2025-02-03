@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Animal;
+use App\Models\BreedingRecord;
+use App\Policies\AnimalPolicy;
+use App\Policies\BreedingRecordPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -13,7 +17,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        Animal::class => AnimalPolicy::class,
+        BreedingRecord::class => BreedingRecordPolicy::class
     ];
 
     /**

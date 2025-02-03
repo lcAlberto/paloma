@@ -18,12 +18,11 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([
-            [
-                'name' => 'Usuário 1',
-                'email' => 'usuario1@gmail.com',
-                'password' => Hash::make('12345678'),
-            ]
+        User::create([
+            'name' => 'Usuário 1',
+            'email' => 'usuario1@gmail.com',
+            'image' => 'user1.png',
+            'password' => Hash::make('12345678'),
         ]);
     }
 }

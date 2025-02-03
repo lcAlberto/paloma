@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Models\Farm;
+use App\Models\Farm;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -16,12 +16,16 @@ class FarmTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('farms')->insert([
-            'name' => 'Fazenda 1'
+        Farm::create([
+            'name' => 'Fazenda 1',
+            'created_at' => now(),
+        ], [
+            'name' => 'Fazenda 2',
+            'created_at' => now(),
         ]);
-
-        $user = User::find('1');
-        $user->farm_id = 1;
-        $user->save();
+        
+        $user1 = User::find('1');
+        $user1->farm_id = 1;
+        $user1->save();
     }
 }

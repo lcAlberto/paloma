@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use App\Enums\AnimalHeatChildbirthTypeEnum;
 use App\Enums\AnimalHeatStatusEnum;
+use App\Rules\AnimalSuitableForReproductionInToTheFarm;
+use App\Rules\BelongsToFarm;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BreedingRequest extends FormRequest
@@ -31,8 +33,8 @@ class BreedingRequest extends FormRequest
             'date_birth' => ['nullable', $this->method() == 'PUT' ? 'sometimes' : 'date'],
             'status' => 'string|in:'. implode(',', AnimalHeatStatusEnum::getConstantsValues()),
             'cover_method' => 'required|in:' . implode(',', AnimalHeatChildbirthTypeEnum::getConstantsValues()),
-            'female_id' => 'required|exists:animals,id',
-            'male_id' => 'nullable|exists:animals,id',
+            'female_id' => ['required', 'exists:animals,id', new BelongsToFarm, new AnimalSuitableForReproductionInToTheFarm],
+            'male_id' => ['nullable', 'exists:animals,id', new BelongsToFarm, new AnimalSuitableForReproductionInToTheFarm],
         ];
     }
 
@@ -44,8 +46,8 @@ class BreedingRequest extends FormRequest
             'date_birth' => 'data do parto',
             'status' => 'status',
             'cover_method' => 'método utilizado',
-            'female_id' => 'fêmea/mãe',
-            'male_id' => 'macho/pai',
+            'female_id' => 'fêmea',
+            'male_id' => 'macho',
         ];
     }
 
